@@ -1,5 +1,5 @@
 from transformers import BertModel, AutoTokenizer, AutoModelForSequenceClassification
-from playground.code_src.base.BaseClasses import  TokenizerConfig, TransformerConfig, TransformerBase
+from code_src.base.BaseClasses import  TokenizerConfig, TransformerConfig, TransformerBase
 
 from datasets import Dataset
 import torch
