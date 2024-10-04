@@ -3,11 +3,11 @@ import pandas as pd
 from transformers import TrainingArguments
 import os
 from datasets import Dataset
-from playground.code_src.transfomers_src.SuperTrainer import SuperTrainer, EvaluateOnTrainSetCallback, complete_metrics
-from playground.code_src.transfomers_src import TransformersClasses as TC
-from playground.code_src.base.BaseClasses import TotalExperimentConfiguration, DataConfig, TrainerConfig, TrainingArgumentsConfig
-from playground.code_src.transfomers_src.utils import dump_configuration_to_json, add_predictions_n_probabilities_df
-from playground.code_src.data_handling_src.data_processing import DataHandler, DataSplitter
+from code_src.transfomers_src.SuperTrainer import SuperTrainer, EvaluateOnTrainSetCallback, complete_metrics
+from code_src.transfomers_src import TransformersClasses as TC
+from code_src.base.BaseClasses import TotalExperimentConfiguration, DataConfig, TrainerConfig, TrainingArgumentsConfig
+from code_src.transfomers_src.utils import dump_configuration_to_json, add_predictions_n_probabilities_df
+from code_src.data_handling_src.data_processing import DataHandler, DataSplitter
 
 ##### 
 """

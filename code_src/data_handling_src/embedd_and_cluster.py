@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split 
 from sklearn.utils import class_weight
 import pandas as pd
-from playground.code_src.base.BaseClasses import  DataConfig
+from code_src.base.BaseClasses import  DataConfig
 from typing import List
 from sentence_transformers import SentenceTransformer
 from transformers import BertModel, BertTokenizer
