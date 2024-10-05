@@ -2,9 +2,9 @@
 from sklearn.model_selection import train_test_split 
 from sklearn.utils import class_weight
 import pandas as pd
-from playground.code_src.base.BaseClasses import  DataConfig
+from code_src.base.BaseClasses import  DataConfig
 from typing import List
-from playground.code_src.data_handling_src.embedd_and_cluster import EmbeddText, ClusteringText
+from code_src.dataset_handler_src.nlp_clustering_pipeline import EmbeddText, ClusteringText
 
 """
 0_ Load data & Process
@@ -54,8 +54,7 @@ class DataHandler():
         self.dataset = pd.read_excel(dataset_path) if dataset_path.endswith('.xlsx') else pd.read_csv(dataset_path)
         self.text_column = config.text_column
         self.label_column = config.label_column
-        self.value_counts = self.dataset[self.label_column].value_counts() if self.label_column is not None else None 
-        self.classes = self.dataset[self.label_column].unique() if self.label_column is not None else None
+        self.classes = self.train_set[self.label_column].unique() if self.label_column is not None else None
         self.process_text = config.process_text
         self.cluster_text = config.cluster_text
         self.cluster_config = config.cluster_config
@@ -94,3 +93,4 @@ class DataHandler():
         single_occurrences = value_counts[value_counts <=threshold].index.tolist()
         updated_clusters = self.dataset[cluster_column_name].apply(lambda x: outlier_string if x in single_occurrences else x).to_list()
         return updated_clusters
+

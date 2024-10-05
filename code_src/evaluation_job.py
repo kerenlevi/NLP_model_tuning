@@ -1,6 +1,6 @@
 import pandas as pd
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TextClassificationPipeline
-from playground.code_src.transfomers_src.SuperTrainer import complete_metrics
+from code_src.transfomers_src.SuperTrainer import complete_metrics
 import torch
 import os 
 
