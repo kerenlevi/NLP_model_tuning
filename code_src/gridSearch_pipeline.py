@@ -9,5 +9,11 @@ import wrapper for tqdm
 ...
 """
 
+
+
+
+def hyperparameter_init():
+    pass
+
 def run_grid():
     pass 
