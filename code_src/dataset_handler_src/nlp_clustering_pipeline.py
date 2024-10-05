@@ -13,27 +13,12 @@ from torchtext.vocab import GloVe
 import evoc
 
 """
-0_ Load data & Process
-1_ embedd data 
-    Init:
-        Model to be used for embedding: Bert, Sentence-Transformer,TF-IDF etc 
-        Input for Embedding: X = data_frame[text_column]
-    Output: Y = embedd_data
-        
-2_ cluster data
-3_ update label column
-4_ split data
-
 #TODO
-# Random selection for variety of data [distribution of #sentences, #participants, #features, clusters, sender]
-#Correltion between #participant & #sentences in IM for N&C 
-#Sample only a section of suppressors (there are a lot )
-# When clustering add another token of 1/0 for suppressors 
 1) Token similarity (how to count number of similar tokens)
 token distribution for similarity of texts?
-Clustering over semantices 
+Clustering over semantices
 Cluster over tokens 
-sample from a cluster 
+sample from a cluster  
 """
 
 

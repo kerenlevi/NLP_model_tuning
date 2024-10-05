@@ -8,16 +8,10 @@ from code_src.transfomers_src import TransformersClasses as TC
 from code_src.base.BaseClasses import TotalExperimentConfiguration, DataConfig, TrainerConfig, TrainingArgumentsConfig
 from code_src.transfomers_src.utils import dump_configuration_to_json, add_predictions_n_probabilities_df
 from code_src.dataset_handler_src.data_handler import DataHandler, DataSplitter
-
-##### 
-"""
-#TODO 
-create a grid search optimized including slope and convergance rate for transformers 
-import wrapper for tqdm
-...
-"""
+from tqdm import tqdm
 
 ############################################################################################################
+
 import logging
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -27,6 +21,18 @@ META_MODEL_CONFIG = {'roberta': TC.RoBERTaBertTransformer,
                      'deberta': TC.DeBERTaBertTransformer,
                      'bert': TC.BertTransformer,
                      'distilbert': TC.DistilBertTransformer}
+
+def dump_best_model(trainer,output_path, testset_path, test_predictions):
+    save_predictions_df(testset_path,test_predictions, output_path )
+    trainer.save_model(os.path.join(output_path, 'best_model')) 
+    trainer.state.save_to_json( os.path.join(output_path, 'best_model','trainer_state.json'))
+
+def save_predictions_df(dataset_path, predictions, 
+                        experiment_output_path, file_name = 'test_set_predictions.xlsx'):
+    df = pd.read_excel(dataset_path)
+    df = add_predictions_n_probabilities_df(predictions, df)
+    df.to_excel(os.path.join(experiment_output_path, file_name))
+
 
 def train_model(model, trainer_config:TrainerConfig, training_arguments:TrainingArgumentsConfig, 
                 tokenized_sets:Dict[Dataset], metrics) -> Tuple[SuperTrainer, Dict[str, float], Dict[str, float]]:
@@ -51,7 +57,6 @@ def train_model(model, trainer_config:TrainerConfig, training_arguments:Training
     pred = trainer.predict(tokenized_sets['test'])
     test_scores = metrics(pred)
     LOGGER.info(f'Test scores: {test_scores}')
-
     return trainer, pred, test_scores
 
 
@@ -80,7 +85,6 @@ def process_experiment_data(data_config:DataConfig, tokenizer:TC.SuperTokenizer,
 
     return tokenized_sets, train_dataHandler.class_weights
 
-# ToDo - add early stop parameter
 def create_training_argument_object(config : TrainingArgumentsConfig) -> TrainingArguments:
     training_args = TrainingArguments(output_dir=config.training_output_path,
                                       evaluation_strategy="epoch",  # Train
@@ -102,7 +106,6 @@ def create_training_argument_object(config : TrainingArgumentsConfig) -> Trainin
                                       fp16 = config.fp_16,
                                       gradient_checkpointing=config.gradient_checkpointing)
     return training_args
-
 
 def train_and_predict(experiment_config: TotalExperimentConfiguration, 
                       trainset_path: str, testset_path: str, validation_path: str = None) -> SuperTrainer:
@@ -129,16 +132,16 @@ def train_and_predict(experiment_config: TotalExperimentConfiguration,
                                                          training_arguments=training_args,
                                                          metrics=complete_metrics,
                                                          tokenized_sets=tokenized_sets)
-
+    LOGGER.info('Backing up results and best model')
     experiment_config.best_checkpoint = trainer.state.best_model_checkpoint
     experiment_config.test_scores = test_scores
     experiment_output_path = experiment_config.training_argumnets.training_output_path
-    
-    test_set = pd.read_excel(testset_path)
-    test_set = add_predictions_n_probabilities_df(test_predictions, test_set)
-    test_set.to_excel(os.path.join(experiment_output_path, 'test_set_predictions.xlsx'))
-    trainer.save_model(os.path.join(experiment_output_path, 'best_model')) 
-    trainer.state.save_to_json( os.path.join(experiment_output_path, 'best_model','trainer_state.json'))
+    dump_best_model(trainer,experiment_output_path, testset_path,test_predictions)
     dump_configuration_to_json(experiment_config)
+
     LOGGER.info('Done Experiment')
     return trainer
+
+
+if __name__ == "__main__":
+    pass 

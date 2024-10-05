@@ -40,9 +40,10 @@ class SuperTrainer(Trainer):
         super().__init__(*args, **kwargs)
         self.class_weights = class_weights
         self.loss_type = loss_type
-        self.lr_schedulert_type =lr_schedulert_type
         self.focal_alpha = focal_alpha
         self.focal_gamma = focal_gamma
+
+        self.lr_schedulert_type =lr_schedulert_type
 
     def compute_loss(self, model, inputs, return_outputs=False):
                 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -51,7 +52,7 @@ class SuperTrainer(Trainer):
                 logits = outputs.get("logits")
                 if self.loss_type == 'focal':
                     assert self.focal_alpha is not None and self.focal_gamma is not None, 'Please provide alpha and gamma values for focal loss'
-                    loss = focal_loss(logits, labels)
+                    loss = focal_loss(logits, labels, self.focal_alpha, self.focal_gamma)
                 elif self.loss_type == 'class_weight':
                     loss_fct = nn.CrossEntropyLoss(weight=torch.tensor(self.class_weights)).to(device, dtype=torch.float32)
                     loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
@@ -59,13 +60,7 @@ class SuperTrainer(Trainer):
                     loss = F.cross_entropy(logits, labels)
                 return (loss, outputs) if return_outputs else loss
     
-    # https://discuss.huggingface.co/t/how-do-use-lr-scheduler/4046/8
-    # def create_optimizer_and_scheduler(self, num_training_steps):
-    #     self.optimizer = AdamW(self.model.parameters(), lr=self.args.learning_rate, weight_decay=self.args.weight_decay)
-    #     if self.lr_schedulert_type=='polynomial':
-    #         self.lr_scheduler = get_polynomial_decay_schedule_with_warmup(self.optimizer, 0, num_training_steps, power=2)
             
-
 class EvaluateOnTrainSetCallback(TrainerCallback):
     def __init__(self, trainer) -> None:
         super().__init__()
@@ -78,7 +73,6 @@ class EvaluateOnTrainSetCallback(TrainerCallback):
         
         return control_copy
     
-
 class EpochEvaluateTrainSet(TrainerCallback):
     def __init__(self, trainer) -> None:
         super().__init__()

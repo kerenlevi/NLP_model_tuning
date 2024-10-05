@@ -6,9 +6,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-"""
-split file to metrics_loss_predictions, configuration scripts 
-"""
 #################################################
 
 def add_predictions_n_probabilities_df(predictions, df):
